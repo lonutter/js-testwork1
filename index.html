@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Калькулятор займов</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="wrap">
+        <div id="position"></div>
+        <div class="form-container">
+            <!-- Начало слайдера суммы займа -->
+            <div class="slider-input-container">
+                <p class="slider-input-label">Сумма займа: <span class="slider-input-values" id="slider-input-sum-value">1 000</span> руб.</p>
+                <div class="slider-input" id="slider-sum" data-si-min="1000" data-si-max="35000" data-si-step="1000" data-si-value="1000">
+                    <div class="amount" id="amount-sum"></div>
+                    <div class="slider-input-min-text">
+                        1 000
+                    </div>
+                    <div class="slider-input-max-text">
+                        35 000
+                    </div>
+                    <span class="toddler" id="toddler-sum" tabindex="0"></span>
+                </div>
+            </div>
+            <!-- /Конец слайдера суммы займа -->
+            <!-- Начало слайдера количества дней -->
+            <div class="slider-input-container">
+                <p class="slider-input-label">Срок: <span class="slider-input-values" id="slider-input-days-value">5</span></p>
+                <div class="slider-input" id="slider-days" data-si-min="5" data-si-max="35" data-si-step="1" data-si-value="5">
+                    <div class="amount" id="amount-days"></div>
+                    <div class="slider-input-min-text">
+                        5
+                    </div>
+                    <div class="slider-input-max-text">
+                        35
+                    </div>
+                    <span class="toddler" id="toddler-days" tabindex="1"></span>
+                </div>
+            </div>
+            <!-- /Конец слайдера количества дней -->
+            <!-- Результаты рассчетов -->
+            <div id="results">
+                <p class="results-row">
+                    <span class="results-text">Сумма к возврату: </span>
+                    <span class="results-value" id="results-sum">0</span> руб.
+                </p>
+                <p class="results-row">
+                    <span class="results-text">Дата возврата: </span>
+                    <span class="results-value" id="results-days">дата</span>
+                </p>
+            </div>
+            <!-- / Результаты рассчетов -->
+        </div>
+    </div>
+    <script src="js/slider_input.js"></script>
+    <script src="js/calculator.js"></script>
+    <script>
+        //Инициализируем слайдеры
+        var sum_slider = new SliderInput(document.getElementById('slider-sum'));
+        var days_slider = new SliderInput(document.getElementById('slider-days'));
+
+        //Что бы каждый раз не гонять document.getElement... поместим нужные объекты в переменные
+        var currentSumElement = document.getElementById('slider-input-sum-value');
+        var currentDaysElement = document.getElementById('slider-input-days-value');
+        var resultSum = document.getElementById('results-sum');
+        var resultDays = document.getElementById('results-days');
+
+        //Подсчитаем по тем данным, что у нас есть на момент инициализации
+        var calculator = new Calculator(sum_slider.value, days_slider.value);
+        resultSum.innerText = calculator.calculate();
+        resultDays.innerText = calculator.getDate();
+        currentDaysElement.innerText = calculator.dayWord();
+
+        //Обработчики события, генерируемого SliderInput после изменения положения ползунка и всего, что с этим связано
+        document.getElementById('slider-sum').addEventListener('si.change', function(event) {   //Сумма
+            currentSumElement.innerText = event.detail.value;
+            calculator.sum = event.detail.value;
+            calculator.days = days_slider.value;
+            resultSum.innerText = calculator.calculate();
+        });
+
+        document.getElementById('slider-days').addEventListener('si.change', function(event) {  //Дни
+            calculator.sum = sum_slider.value;
+            calculator.days = event.detail.value;
+            currentDaysElement.innerText = calculator.dayWord();
+            resultSum.innerText = calculator.calculate();
+            resultDays.innerText = calculator.getDate();
+        });
+    </script>
+</body>
+</html>
